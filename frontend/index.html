@@ -10,25 +10,48 @@
     <header>
         <h1>RSS Aggregator Dashboard</h1>
         <div class="auth-box">
-            <label for="apiKey">API Key:</label>
-            <input type="text" id="apiKey" placeholder="Paste your generated ApiKey here">
+            <label for="apiKey">Active API Key:</label>
+            <input type="text" id="apiKey" placeholder="User ApiKey will auto-fill or can be pasted here">
         </div>
     </header>
 
     <main class="container">
         <section class="card">
-            <h2>Follow a New Feed</h2>
+            <h2>1. User Management (POST /v1/users)</h2>
             <div class="form-group">
-                <input type="text" id="feedIdInput" placeholder="Enter Feed UUID">
-                <button id="btnFollow">Follow Feed</button>
+                <input type="text" id="usernameInput" placeholder="Enter New Username">
+                <button id="btnCreateUser">Register User</button>
+            </div>
+            <div id="userResult" class="meta-info"></div>
+        </section>
+
+        <section class="card">
+            <h2>2. Create New Feed Channel (POST /v1/feeds)</h2>
+            <div class="form-group">
+                <input type="text" id="feedNameInput" placeholder="Feed Name (e.g., TechCrunch)">
+                <input type="text" id="feedUrlInput" placeholder="RSS Link URL (e.g., https://site.com/rss)">
+                <button id="btnCreateFeed">Register Feed</button>
             </div>
         </section>
 
         <section class="card">
-            <h2>Your Subscribed Feeds</h2>
-            <button id="btnFetchFollows">Refresh My Feed Subscriptions</button>
-            <ul id="followsList" class="list-container">
-                </ul>
+            <h2>3. Global Public Directory (GET /v1/feeds)</h2>
+            <button id="btnFetchPublicFeeds">Load Global Channels</button>
+            <ul id="publicFeedsList" class="list-container"></ul>
+        </section>
+
+        <section class="card">
+            <h2>4. Target & Follow Feed (POST /v1/feed_follows)</h2>
+            <div class="form-group">
+                <input type="text" id="feedIdInput" placeholder="Paste target Feed UUID code here">
+                <button id="btnFollow">Follow Channel</button>
+            </div>
+        </section>
+
+        <section class="card full-width">
+            <h2>5. Your Subscriptions Dashboard (GET & DELETE /v1/feed_follows)</h2>
+            <button id="btnFetchFollows" class="primary-btn">Refresh My Active Follows</button>
+            <ul id="followsList" class="list-container"></ul>
         </section>
     </main>
 
