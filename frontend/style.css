@@ -1,0 +1,74 @@
+:root {
+    --bg-color: #121214;
+    --card-bg: #202024;
+    --text-color: #e1e1e6;
+    --accent-color: #04d361;
+    --danger-color: #f75a68;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #323238;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+input, button {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #323238;
+    background: #121214;
+    color: white;
+}
+
+button {
+    background: var(--accent-color);
+    color: #121214;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button.delete-btn {
+    background: var(--danger-color);
+    color: white;
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+.list-container {
+    list-style: none;
+    padding: 0;
+}
+
+.list-container li {
+    background: #121214;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
