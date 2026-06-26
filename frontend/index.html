@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go RSS Aggregator Client</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>RSS Aggregator Dashboard</h1>
+        <div class="auth-box">
+            <label for="apiKey">API Key:</label>
+            <input type="text" id="apiKey" placeholder="Paste your generated ApiKey here">
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="card">
+            <h2>Follow a New Feed</h2>
+            <div class="form-group">
+                <input type="text" id="feedIdInput" placeholder="Enter Feed UUID">
+                <button id="btnFollow">Follow Feed</button>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Your Subscribed Feeds</h2>
+            <button id="btnFetchFollows">Refresh My Feed Subscriptions</button>
+            <ul id="followsList" class="list-container">
+                </ul>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
