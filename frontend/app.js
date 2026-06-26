@@ -1,18 +1,128 @@
-const BASE_URL = "http://localhost:8080/v1"; // Change if your Go server port is different
+const BASE_URL = "http://localhost:8080/v1";
 
-// Helper function to get auth headers automatically
+// Helper utility to collect state from the credential field automatically
 function getHeaders() {
-    const apiKey = document.getElementById("apiKey").value;
+    const apiKey = document.getElementById("apiKey").value.trim();
     return {
         "Content-Type": "application/json",
         "Authorization": `ApiKey ${apiKey}`
     };
 }
 
-// 1. GET Request: Fetch Followed Feeds
+// ──── 1. CREATE USER (POST) ────
+async function createUser() {
+    const username = document.getElementById("usernameInput").value.trim();
+    if (!username) return alert("Please type a username first.");
+
+    try {
+        const response = await fetch(`${BASE_URL}/users`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: username })
+        });
+
+        if (!response.ok) throw new Error("Could not register user endpoint profile.");
+        const user = await response.json();
+
+        // Inject generated system configurations straight onto the viewport
+        document.getElementById("userResult").innerHTML = `
+            <div style="background:#121214; margin-top:10px; padding:10px; border-radius:4px; font-size:13px;">
+                <p style="color: #04d361; margin:0 0 5px 0;">✔ User Created successfully!</p>
+                <strong>Name:</strong> ${user.name}<br>
+                <strong>Key:</strong> <code style="color:#04d361;">${user.api_key}</code>
+            </div>
+        `;
+        
+        // Auto-populate the active authentication header box for convenience
+        document.getElementById("apiKey").value = user.api_key;
+        alert(`Welcome ${user.name}! Your API key was auto-loaded.`);
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+// ──── 2. CREATE FEED LINK (POST - AUTHENTICATED) ────
+async function createFeed() {
+    const name = document.getElementById("feedNameInput").value.trim();
+    const url = document.getElementById("feedUrlInput").value.trim();
+    if (!name || !url) return alert("Both Feed Name and RSS URL must be populated.");
+
+    try {
+        const response = await fetch(`${BASE_URL}/feeds`, {
+            method: "POST",
+            headers: getHeaders(),
+            body: JSON.stringify({ name: name, url: url })
+        });
+
+        if (!response.ok) throw new Error("Feed registration failed. Is your Active API Key valid?");
+        
+        alert("New RSS feed registered to global directory!");
+        document.getElementById("feedNameInput").value = "";
+        document.getElementById("feedUrlInput").value = "";
+        fetchPublicFeeds(); // Auto reload directory view to display the changes
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+// ──── 3. READ PUBLIC DIRECTORY (GET - ANONYMOUS) ────
+async function fetchPublicFeeds() {
+    const list = document.getElementById("publicFeedsList");
+    list.innerHTML = "<li>Querying global server indexes...</li>";
+
+    try {
+        const response = await fetch(`${BASE_URL}/feeds`, { method: "GET" });
+        if (!response.ok) throw new Error("Could not download public feeds directory.");
+        const feeds = await response.json();
+        list.innerHTML = "";
+
+        if (feeds.length === 0) {
+            list.innerHTML = "<li>The directory index is currently empty.</li>";
+            return;
+        }
+
+        feeds.forEach(feed => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+                <div>
+                    <strong>📡 ${feed.name}</strong><br>
+                    <small style="color: #a8a8b3;">ID: ${feed.id}</small>
+                </div>
+                <button onclick="copyValueToClipboard('${feed.id}')" style="background:#323238; color:white; font-size:11px; padding:5px 8px;">Copy ID</button>
+            `;
+            list.appendChild(li);
+        });
+    } catch (err) {
+        list.innerHTML = `<li style="color:var(--danger-color);">Error: ${err.message}</li>`;
+    }
+}
+
+// ──── 4. FOLLOW A CHANNEL (POST - AUTHENTICATED) ────
+async function followFeed() {
+    const feedId = document.getElementById("feedIdInput").value.trim();
+    if (!feedId) return alert("Provide a valid target Feed UUID.");
+
+    try {
+        const response = await fetch(`${BASE_URL}/feed_follows`, {
+            method: "POST",
+            headers: getHeaders(),
+            body: JSON.stringify({ feed_id: feedId })
+        });
+
+        if (!response.ok) throw new Error("Follow connection rejected. Check your API key authentication.");
+        
+        alert("Channel added to personal subscription tracks!");
+        document.getElementById("feedIdInput").value = "";
+        fetchFollowedFeeds(); // Auto-refresh your dashboard tracking list
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+// ──── 5. READ PERSONAL SUBSCRIPTIONS (GET - AUTHENTICATED) ────
 async function fetchFollowedFeeds() {
-    const listContainer = document.getElementById("followsList");
-    listContainer.innerHTML = "<li>Loading your subscriptions...</li>";
+    const list = document.getElementById("followsList");
+    list.innerHTML = "<li>Assembling user personal feed structures...</li>";
 
     try {
         const response = await fetch(`${BASE_URL}/feed_follows`, {
@@ -20,71 +130,58 @@ async function fetchFollowedFeeds() {
             headers: getHeaders()
         });
 
-        if (!response.ok) throw new Error("Failed to fetch. Check API Key.");
+        if (!response.ok) throw new Error("Fetch blocked. Check your API Key string.");
+        const userFollowsArray = await response.json();
+        list.innerHTML = "";
 
-        const data = await response.json(); // Parsing raw HTTP body string into JavaScript objects
-        listContainer.innerHTML = ""; // Clear loader
-
-        if (data.length === 0) {
-            listContainer.innerHTML = "<li>You aren't following any feeds yet!</li>";
+        if (userFollowsArray.length === 0) {
+            list.innerHTML = "<li>You aren't tracking any RSS channels yet!</li>";
             return;
         }
 
-        data.forEach(follow => {
+        userFollowsArray.forEach(relation => {
             const li = document.createElement("li");
             li.innerHTML = `
-                <span>Feed ID: ${follow.feed_id}</span>
-                <button class="delete-btn" onclick="unfollowFeed('${follow.id}')">Unfollow</button>
+                <span>
+                    <strong>📌 Subscription Connection ID:</strong> ${relation.id}<br>
+                    <small style="color:#a8a8b3;">Tracking Feed Target ID: ${relation.feed_id}</small>
+                </span>
+                <button class="delete-btn" onclick="unfollowFeed('${relation.id}')">Unfollow</button>
             `;
-            listContainer.appendChild(li);
+            list.appendChild(li);
         });
-
     } catch (err) {
-        listContainer.innerHTML = `<li style="color: red;">Error: ${err.message}</li>`;
+        list.innerHTML = `<li style="color:var(--danger-color);">Error: ${err.message}</li>`;
     }
 }
 
-// 2. POST Request: Follow a Feed
-async function followFeed() {
-    const feedId = document.getElementById("feedIdInput").value;
-    if (!feedId) return alert("Please enter a Feed UUID");
+// ──── 6. DELETE RELATION CONSTRAINT (DELETE - AUTHENTICATED) ────
+async function unfollowFeed(relationshipId) {
+    if (!confirm("Are you sure you want to drop this feed tracking relationship?")) return;
 
     try {
-        const response = await fetch(`${BASE_URL}/feed_follows`, {
-            method: "POST",
-            headers: getHeaders(),
-            body: JSON.stringify({ feed_id: feedId }) // Converting JSON data structure back to a plain string for the wire
-        });
-
-        if (!response.ok) throw new Error("Could not follow feed.");
-
-        alert("Successfully followed feed!");
-        document.getElementById("feedIdInput").value = "";
-        fetchFollowedFeeds(); // Auto refresh layout
-    } catch (err) {
-        alert(err.message);
-    }
-}
-
-// 3. DELETE Request: Unfollow a Feed using the dynamic URL param
-async function unfollowFeed(feedFollowId) {
-    if (!confirm("Are you sure you want to unfollow this feed?")) return;
-
-    try {
-        const response = await fetch(`${BASE_URL}/feed_follows/${feedFollowId}`, {
+        const response = await fetch(`${BASE_URL}/feed_follows/${relationshipId}`, {
             method: "DELETE",
             headers: getHeaders()
         });
 
-        if (!response.ok) throw new Error("Could not delete subscription.");
-
-        alert("Unfollowed successfully!");
-        fetchFollowedFeeds(); // Auto refresh layout
+        if (!response.ok) throw new Error("Could not execute deletion query.");
+        alert("Subscription record terminated successfully.");
+        fetchFollowedFeeds(); // Refresh the personal tracking stream
     } catch (err) {
         alert(err.message);
     }
 }
 
-// Attach Event Listeners to UI Buttons
-document.getElementById("btnFetchFollows").addEventListener("click", fetchFollowedFeeds);
+// Clipboard Helper
+function copyValueToClipboard(text) {
+    navigator.clipboard.writeText(text);
+    alert("Feed UUID saved to clipboard buffer!");
+}
+
+// Binding Application Click Handlers
+document.getElementById("btnCreateUser").addEventListener("click", createUser);
+document.getElementById("btnCreateFeed").addEventListener("click", createFeed);
+document.getElementById("btnFetchPublicFeeds").addEventListener("click", fetchPublicFeeds);
 document.getElementById("btnFollow").addEventListener("click", followFeed);
+document.getElementById("btnFetchFollows").addEventListener("click", fetchFollowedFeeds);

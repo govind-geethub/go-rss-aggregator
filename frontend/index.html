@@ -17,7 +17,7 @@
 
     <main class="container">
         <section class="card">
-            <h2>1. User Management (POST /v1/users)</h2>
+            <h2>1. User Management (POST)</h2> <!--/v1/users-->
             <div class="form-group">
                 <input type="text" id="usernameInput" placeholder="Enter New Username">
                 <button id="btnCreateUser">Register User</button>
@@ -26,7 +26,7 @@
         </section>
 
         <section class="card">
-            <h2>2. Create New Feed Channel (POST /v1/feeds)</h2>
+            <h2>2. Create New Feed Channel (POST)</h2>  <!--/v1/feeds-->
             <div class="form-group">
                 <input type="text" id="feedNameInput" placeholder="Feed Name (e.g., TechCrunch)">
                 <input type="text" id="feedUrlInput" placeholder="RSS Link URL (e.g., https://site.com/rss)">
@@ -35,13 +35,13 @@
         </section>
 
         <section class="card">
-            <h2>3. Global Public Directory (GET /v1/feeds)</h2>
+            <h2>3. Global Public Directory (GET)</h2>   <!--/v1/feeds-->
             <button id="btnFetchPublicFeeds">Load Global Channels</button>
             <ul id="publicFeedsList" class="list-container"></ul>
         </section>
 
         <section class="card">
-            <h2>4. Target & Follow Feed (POST /v1/feed_follows)</h2>
+            <h2>4. Target & Follow Feed (POST)</h2>     <!--/v1/feed_follows-->
             <div class="form-group">
                 <input type="text" id="feedIdInput" placeholder="Paste target Feed UUID code here">
                 <button id="btnFollow">Follow Channel</button>
@@ -49,7 +49,7 @@
         </section>
 
         <section class="card full-width">
-            <h2>5. Your Subscriptions Dashboard (GET & DELETE /v1/feed_follows)</h2>
+            <h2>5. Your Subscriptions Dashboard (GET & DELETE)</h2> <!--/v1/feed_follows-->
             <button id="btnFetchFollows" class="primary-btn">Refresh My Active Follows</button>
             <ul id="followsList" class="list-container"></ul>
         </section>
