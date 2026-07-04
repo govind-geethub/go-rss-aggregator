@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/v1";
+const BASE_URL = "https://go-rss-aggregator-ez9y.onrender.com";
 
 // Helper utility to collect state from the credential field automatically
 function getHeaders() {
