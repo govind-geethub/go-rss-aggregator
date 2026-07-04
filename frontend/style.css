@@ -83,3 +83,16 @@ button.delete-btn {
 input::placeholder {
     color: #737380;
 }
+/* --- Article Spacing & Separation --- */
+.posts-grid > div {
+    margin-bottom: 2.5rem;       /* Creates a clean gap before the next headline */
+    padding-bottom: 1.5rem;      /* Gives the link breathing room above the line */
+    border-bottom: 1px solid #2d2d2d; /* Adds a clean, subtle divider line */
+}
+
+/* Remove the line from the very last article so it looks clean */
+.posts-grid > div:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}

@@ -53,6 +53,17 @@
             <button id="btnFetchFollows" class="primary-btn">Refresh My Active Follows</button>
             <ul id="followsList" class="list-container"></ul>
         </section>
+        <section class="card full-width">
+            <h2>6. Your Personalized Article Feed (GET)</h2>
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label for="postLimitInput">Limit posts:</label>
+                <input type="number" id="postLimitInput" value="10" style="width: 80px; max-width: 80px;">
+                <button id="btnFetchPosts" class="primary-btn" style="background: #04d361;">Fetch Latest Articles</button>
+            </div>
+            <div id="postsStreamContainer" class="posts-grid">
+                <p style="color: #737380;">Click the button above to load your subscribed stream.</p>
+            </div>
+        </section>
     </main>
 
     <script src="app.js"></script>

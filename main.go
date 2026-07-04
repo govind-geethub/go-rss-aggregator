@@ -30,7 +30,8 @@ func main() {
 
 	portString := os.Getenv("PORT")
 	if portString == "" {
-		log.Fatal("Port is not found in the environment")
+		log.Println("PORT environment variable not set, defaulting to 8080")
+		portString = "8080"
 	}
 
 	dbURL := os.Getenv("DB_URL")

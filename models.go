@@ -88,9 +88,10 @@ type Post struct {
 	PublishedAt time.Time `json:"published_at"`
 	Url         string    `json:"url"`
 	FeedID      uuid.UUID `json:"feed_id"`
+	FeedName    string    `json:"feed_name"`
 }
 
-func databasePostToPost(dbPost database.Post) Post {
+func databasePostToPost(dbPost database.GetPostForUserRow) Post {
 	var description *string
 	if dbPost.Description.Valid {
 		description = &dbPost.Description.String // derefernced description
@@ -105,10 +106,11 @@ func databasePostToPost(dbPost database.Post) Post {
 		PublishedAt: dbPost.PublishedAt,
 		Url:         dbPost.Url,
 		FeedID:      dbPost.FeedID,
+		FeedName:    dbPost.FeedName,
 	}
 }
 
-func databasePostsToPosts(dbPosts []database.Post) []Post {
+func databasePostsToPosts(dbPosts []database.GetPostForUserRow) []Post {
 	posts := []Post{}
 	for _, dbPost := range dbPosts {
 		posts = append(posts, databasePostToPost(dbPost))
