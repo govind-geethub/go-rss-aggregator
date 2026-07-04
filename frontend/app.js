@@ -1,4 +1,4 @@
-const BASE_URL = "https://go-rss-aggregator-ez9y.onrender.com";
+const BASE_URL = "https://go-rss-aggregator-ez9y.onrender.com/v1";
 
 // Helper utility to collect state from the credential field automatically
 function getHeaders() {
